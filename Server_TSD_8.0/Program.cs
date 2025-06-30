@@ -6,17 +6,17 @@ using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка безопасности TLS
+// РќР°СЃС‚СЂРѕР№РєР° Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё TLS
 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
-// Чтение конфигурации из файла
+// Р§С‚РµРЅРёРµ РєРѕРЅС„РёРіСѓСЂР°С†РёРё РёР· С„Р°Р№Р»Р°
 string strAosList = System.IO.File.ReadAllText(@"\\bko\NETLOGON\axapta\ax2009\aoslistTSD.txt");
 string[] strSplit = strAosList.Trim().Split(';');
 string strServer = strSplit[0];
 string strDB = strSplit[1];
 string conn = "Server=" + strServer + ";Database=" + strDB + ";Trusted_Connection=True;UID=login;PWD=pass;TrustServerCertificate=true;";
 
-// Добавление сервисов (аналог ConfigureServices в Startup.cs)
+// Р”РѕР±Р°РІР»РµРЅРёРµ СЃРµСЂРІРёСЃРѕРІ (Р°РЅР°Р»РѕРі ConfigureServices РІ Startup.cs)
 builder.Services.AddDbContext<LabelContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("bko-shtrih1")));
 
@@ -26,13 +26,13 @@ builder.Services.AddDbContext<dbReplDataContext>(options =>
 builder.Services.AddDbContext<db_DaxBkoContext>(options =>
     options.UseSqlServer(conn));
 
-// Добавление контроллеров (заменяет AddMvc)
+// Р”РѕР±Р°РІР»РµРЅРёРµ РєРѕРЅС‚СЂРѕР»Р»РµСЂРѕРІ (Р·Р°РјРµРЅСЏРµС‚ AddMvc)
 builder.Services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
 
 var app = builder.Build();
 
-// Конфигурация конвейера HTTP (аналог Configure в Startup.cs)
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ РєРѕРЅРІРµР№РµСЂР° HTTP (Р°РЅР°Р»РѕРі Configure РІ Startup.cs)
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -45,9 +45,9 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// Вставляем наш middleware для API здесь
-// IS Перевел на версию ASP NET Core 8.0 с 2.1
-// 8.0 чувствительна к двойным слешам. На андроид приложении их понатыкано в каждом месте, поэтому защитимся здесь
+// Р’СЃС‚Р°РІР»СЏРµРј РЅР°С€ middleware РґР»СЏ API Р·РґРµСЃСЊ
+// IS РџРµСЂРµРІРµР» РЅР° РІРµСЂСЃРёСЋ ASP NET Core 8.0 СЃ 2.1
+// 8.0 С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅР° Рє РґРІРѕР№РЅС‹Рј СЃР»РµС€Р°Рј. РќР° Р°РЅРґСЂРѕРёРґ РїСЂРёР»РѕР¶РµРЅРёРё РёС… РїРѕРЅР°С‚С‹РєР°РЅРѕ РІ РєР°Р¶РґРѕРј РјРµСЃС‚Рµ, РїРѕСЌС‚РѕРјСѓ Р·Р°С‰РёС‚РёРјСЃСЏ Р·РґРµСЃСЊ
 app.UseWhen(context => context.Request.Path.StartsWithSegments("//api"), appBuilder =>
 {
     appBuilder.Use((Func<HttpContext, Func<Task>, Task>)(async (context, next) =>
@@ -59,6 +59,6 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("//api"), appBuil
 
 app.UseAuthorization();
 
-app.MapControllers(); // Заменяет app.UseMvc()
+app.MapControllers(); // Р—Р°РјРµРЅСЏРµС‚ app.UseMvc()
 
 app.Run();
